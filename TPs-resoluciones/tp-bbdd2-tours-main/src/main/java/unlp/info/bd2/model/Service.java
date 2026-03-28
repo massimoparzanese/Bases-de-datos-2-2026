@@ -3,21 +3,49 @@ package unlp.info.bd2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "services")
 public class Service {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(nullable = false)
     private float price;
 
+    @Column(length = 255)
     private String description;
 
-    private List<ItemService> itemServiceList;
+    @OneToMany(mappedBy = "service")
+    private List<ItemService> itemServiceList = new ArrayList<>();
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
 
+    public Service() {
+    }
 
+    public Service(String name, float price, String description, Supplier supplier) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.supplier = supplier;
+    }
     public Long getId() {
         return id;
     }

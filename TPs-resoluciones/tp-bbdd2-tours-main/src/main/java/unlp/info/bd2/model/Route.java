@@ -1,24 +1,53 @@
 package unlp.info.bd2.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "routes")
 public class Route {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
+    
+    @Column(nullable = false)
 
     private float price;
-
+    @Column(nullable = false)
     private float totalKm;
 
+    @Column(nullable = false)
     private int maxNumberUsers;
 
+    @ManyToMany
+    @JoinTable(name = "route_stop",
+        joinColumns = @JoinColumn(name = "route_id"),
+        inverseJoinColumns = @JoinColumn(name = "stop_id"))
     private List<Stop> stops;
 
+    @ManyToMany
+    @JoinTable(name = "route_driver",
+        joinColumns = @JoinColumn(name = "route_id"),
+        inverseJoinColumns = @JoinColumn(name = "driver_user_id"))
     private List<DriverUser> driverList;
 
+    @ManyToMany
+    @JoinTable(name = "route_tour_guide",
+        joinColumns = @JoinColumn(name = "route_id"),
+        inverseJoinColumns = @JoinColumn(name = "tour_guide_user_id"))
     private List<TourGuideUser> tourGuideList;
 
     public Long getId() {
