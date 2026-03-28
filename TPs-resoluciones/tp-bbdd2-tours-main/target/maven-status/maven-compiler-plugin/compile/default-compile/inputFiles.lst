@@ -1,0 +1,17 @@
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Stop.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/utils/DBInitializer.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/config/AppConfig.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/User.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/utils/ToursException.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Supplier.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/config/DBInitializerConfig.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/ItemService.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/DriverUser.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/TourGuideUser.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/config/HibernateConfiguration.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/services/ToursService.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Service.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Route.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Purchase.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/TrabajoPractico2026Application.java
+/home/massimo/Escritorio/UNLP/4to-año/Primero/Bases-de-datos-2/TPs-resoluciones/tp-bbdd2-tours-main/src/main/java/unlp/info/bd2/model/Review.java
