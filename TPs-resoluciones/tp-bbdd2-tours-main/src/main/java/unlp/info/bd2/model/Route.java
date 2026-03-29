@@ -1,5 +1,6 @@
 package unlp.info.bd2.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -36,19 +37,29 @@ public class Route {
     @JoinTable(name = "route_stop",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "stop_id"))
-    private List<Stop> stops;
+    private List<Stop> stops = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "route_driver",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "driver_user_id"))
-    private List<DriverUser> driverList;
+    private List<DriverUser> driverList = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "route_tour_guide",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "tour_guide_user_id"))
-    private List<TourGuideUser> tourGuideList;
+    private List<TourGuideUser> tourGuideList = new ArrayList<>();
+
+    public Route() {
+    }
+
+    public Route(String name, float price, float totalKm, int maxNumberUsers) {
+        this.name = name;
+        this.price = price;
+        this.totalKm = totalKm;
+        this.maxNumberUsers = maxNumberUsers;
+    }
 
     public Long getId() {
         return id;
@@ -112,6 +123,19 @@ public class Route {
 
     public void setTourGuideList(List<TourGuideUser> tourGuideList) {
         this.tourGuideList = tourGuideList;
+    }
+
+    public void addStop(Stop stop) {
+        this.stops.add(stop);
+
+    }
+
+    public void addDriver(DriverUser driver) {
+        this.driverList.add(driver);
+    }
+
+    public void addTourGuide(TourGuideUser tourGuide) {
+        this.tourGuideList.add(tourGuide);
     }
 
 }

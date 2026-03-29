@@ -36,7 +36,11 @@ public class DriverUser extends User {
         return routes;
     }
 
-    public void setRouts(List<Route> routs) {
-        this.routes = routs;
+    public void setRoutes(List<Route> routes) {
+        this.routes = routes;
+    }
+
+    public void setRouts(List<Route> routes) {
+        this.setRoutes(routes);
     }
 }
