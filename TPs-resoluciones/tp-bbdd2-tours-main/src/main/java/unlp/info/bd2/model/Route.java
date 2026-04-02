@@ -3,6 +3,7 @@ package unlp.info.bd2.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,19 +34,19 @@ public class Route {
     @Column(nullable = false)
     private int maxNumberUsers;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "route_stop",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "stop_id"))
     private List<Stop> stops = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "route_driver",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "driver_user_id"))
     private List<DriverUser> driverList = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "route_tour_guide",
         joinColumns = @JoinColumn(name = "route_id"),
         inverseJoinColumns = @JoinColumn(name = "tour_guide_user_id"))

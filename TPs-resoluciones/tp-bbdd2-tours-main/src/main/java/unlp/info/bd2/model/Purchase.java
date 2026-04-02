@@ -45,10 +45,10 @@ public class Purchase {
     @JoinColumn(name = "route_id", nullable = false)
     private Route route;
 
-    @OneToOne(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "purchase", cascade = { CascadeType.REMOVE, CascadeType.MERGE}, orphanRemoval = true)
     private Review review;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "purchase", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ItemService> itemServiceList = new ArrayList<>();
 
     public Purchase() {

@@ -2,6 +2,7 @@ package unlp.info.bd2.model;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,10 +22,11 @@ public class Supplier {
     @Column(nullable = false, length = 100)
     private String businessName;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String authorizationNumber;
 
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier",
+        cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Service> services;
 
     public Supplier() {
