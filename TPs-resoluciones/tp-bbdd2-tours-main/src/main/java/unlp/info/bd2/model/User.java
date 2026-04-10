@@ -21,9 +21,7 @@ import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "user_type")
-@DiscriminatorValue("USER")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
