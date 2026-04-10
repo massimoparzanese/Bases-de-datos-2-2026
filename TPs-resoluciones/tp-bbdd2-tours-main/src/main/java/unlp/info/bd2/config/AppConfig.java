@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import unlp.info.bd2.repositories.*;
+import unlp.info.bd2.repositories.Impl.ToursRepositoryImpl;
 import unlp.info.bd2.services.*;
 
 @Configuration

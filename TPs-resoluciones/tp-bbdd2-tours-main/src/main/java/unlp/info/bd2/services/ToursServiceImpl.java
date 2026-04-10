@@ -14,7 +14,7 @@ import unlp.info.bd2.model.Stop;
 import unlp.info.bd2.model.Supplier;
 import unlp.info.bd2.model.TourGuideUser;
 import unlp.info.bd2.model.User;
-import unlp.info.bd2.repositories.ToursRepositoryImpl;
+import unlp.info.bd2.repositories.Impl.ToursRepositoryImpl;
 import unlp.info.bd2.utils.ToursException;
 
 public class ToursServiceImpl implements ToursService {
