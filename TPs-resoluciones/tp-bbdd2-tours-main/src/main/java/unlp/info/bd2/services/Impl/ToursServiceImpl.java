@@ -1,4 +1,4 @@
-package unlp.info.bd2.services;
+package unlp.info.bd2.services.Impl;
 
 import java.util.Date;
 import java.util.List;
@@ -14,15 +14,12 @@ import unlp.info.bd2.model.Stop;
 import unlp.info.bd2.model.Supplier;
 import unlp.info.bd2.model.TourGuideUser;
 import unlp.info.bd2.model.User;
-import unlp.info.bd2.repositories.Impl.ToursRepositoryImpl;
+import unlp.info.bd2.services.ToursService;
 import unlp.info.bd2.utils.ToursException;
 
 public class ToursServiceImpl implements ToursService {
 
-    private ToursRepositoryImpl repository;
-
-    public ToursServiceImpl(ToursRepositoryImpl repository) {
-        this.repository = repository;
+    public ToursServiceImpl() {
     }
 
     @Override

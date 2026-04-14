@@ -2,6 +2,7 @@ package unlp.info.bd2.model;
 
 
 import java.util.List;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
@@ -24,6 +25,13 @@ public class TourGuideUser extends User {
         super(username, password, name, email);
         this.education = education;
     }
+
+    public TourGuideUser(String username, String password, String name, String email, Date birthdate,
+            String phoneNumber, String education) {
+        super(username, password, name, email, birthdate, phoneNumber);
+        this.education = education;
+    }
+
 
 
     public String getEducation() {

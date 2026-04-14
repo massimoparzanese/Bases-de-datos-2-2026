@@ -2,6 +2,7 @@ package unlp.info.bd2.model;
 
 
 import java.util.List;
+import java.util.Date;
 
 
 import jakarta.persistence.Column;
@@ -22,6 +23,14 @@ public class DriverUser extends User {
         super(username, password, name, email);
         this.expedient = expedient;
     }
+
+    public DriverUser(String username, String password, String name, String email, Date birthdate,
+            String phoneNumber, String expedient) {
+        super(username, password, name, email, birthdate, phoneNumber);
+        this.expedient = expedient;
+    }
+
+
     
 
     public String getExpedient() {
