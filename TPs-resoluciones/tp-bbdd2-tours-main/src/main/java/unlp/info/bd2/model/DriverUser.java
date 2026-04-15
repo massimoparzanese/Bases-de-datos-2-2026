@@ -6,10 +6,12 @@ import java.util.Date;
 
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 
 @Entity
+@DiscriminatorValue("DRIVER")
 public class DriverUser extends User {
 
     @Column(nullable = false, length = 50)

@@ -10,6 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 
 @Entity
+@DiscriminatorValue("TOURGUIDE")
 public class TourGuideUser extends User {
 
     @Column(nullable = false, length = 100)

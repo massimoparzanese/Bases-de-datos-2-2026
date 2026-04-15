@@ -1,5 +1,6 @@
 package unlp.info.bd2.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -27,7 +28,7 @@ public class Supplier {
 
     @OneToMany(mappedBy = "supplier",
         cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Service> services;
+    private List<Service> services = new ArrayList<>();
 
     public Supplier() {
     }

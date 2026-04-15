@@ -2,9 +2,11 @@ package unlp.info.bd2.services.Impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.DriverUser;
+import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.TourGuideUser;
 import unlp.info.bd2.model.User;
 import unlp.info.bd2.repositories.Impl.TourGuideUserRepositoryImpl;
+import unlp.info.bd2.repositories.Impl.RouteRepositoryImpl;
 import unlp.info.bd2.repositories.Impl.UsersRepositoryImpl;
 import unlp.info.bd2.services.UserService;
 import unlp.info.bd2.utils.ToursException;
@@ -21,10 +23,14 @@ public class UserServiceImpl implements UserService {
 
     private final UsersRepositoryImpl userRepository;
     private final TourGuideUserRepositoryImpl tourGuideUserRepository;
+    private final RouteRepositoryImpl routeRepository;
 
-    public UserServiceImpl(UsersRepositoryImpl userRepository, TourGuideUserRepositoryImpl tourGuideUserRepository) {
+    public UserServiceImpl(UsersRepositoryImpl userRepository,
+            TourGuideUserRepositoryImpl tourGuideUserRepository,
+            RouteRepositoryImpl routeRepository) {
         this.userRepository = userRepository;
         this.tourGuideUserRepository = tourGuideUserRepository;
+        this.routeRepository = routeRepository;
     }
 
     @Override
@@ -96,6 +102,8 @@ public class UserServiceImpl implements UserService {
             throw new ToursException("El usuario a actualizar debe tener id");
         }
         try {
+            String originalUsername = userRepository.getUsernameByIdWithoutFlushing(user.getId());
+            user.setUsername(originalUsername);
             return userRepository.save(user);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo actualizar el usuario");
@@ -106,11 +114,32 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = ToursException.class)
     public void deleteUser(Long userId) throws ToursException {
         try {
-            Optional<User> user = userRepository.findById(userId);
-            if (user.isEmpty()) {
-                throw new ToursException("No existe un usuario con id " + userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ToursException("No existe un usuario con id " + userId));
+
+            if (!user.isActive()) {
+                throw new ToursException("El usuario se encuentra desactivado");
             }
-            userRepository.delete(user.get());
+
+            if (user instanceof TourGuideUser) {
+                boolean assignedToSomeRoute = routeRepository.findAll()
+                        .stream()
+                        .map(Route::getTourGuideList)
+                        .filter(list -> list != null)
+                        .flatMap(List::stream)
+                        .anyMatch(guide -> guide.getId() != null && guide.getId().equals(userId));
+                if (assignedToSomeRoute) {
+                    throw new ToursException("El usuario no puede ser desactivado");
+                }
+            }
+
+            if (user.getPurchaseList() != null && !user.getPurchaseList().isEmpty()) {
+                user.setActive(false);
+                userRepository.save(user);
+                return;
+            }
+
+            userRepository.delete(user);
         } catch (ToursException ex) {
             throw ex;
         } catch (RuntimeException ex) {

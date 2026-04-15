@@ -32,11 +32,7 @@ public class RouteRepositoryImpl extends AbstractHibernateRepository<Route, Long
     public int getMaxStopOfRoutes() {
         try {
             Integer result = this.currentSession()
-                    .createNativeQuery(
-                            "select coalesce(max(stop_count), 0) " +
-                            "from (select count(s.id) as stop_count from routes r " +
-                            "left join route_stop rs on r.id = rs.route_id group by r.id) sq",
-                            Integer.class)
+                    .createQuery("select coalesce(max(size(r.stops)), 0) from Route r", Integer.class)
                     .getSingleResult();
             return result != null ? result : 0;
         } catch (RuntimeException ex) {
