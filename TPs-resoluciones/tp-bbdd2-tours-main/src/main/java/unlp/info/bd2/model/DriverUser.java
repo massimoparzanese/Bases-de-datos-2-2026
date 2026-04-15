@@ -2,12 +2,38 @@ package unlp.info.bd2.model;
 
 
 import java.util.List;
+import java.util.Date;
 
+
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+
+@Entity
+@DiscriminatorValue("DRIVER")
 public class DriverUser extends User {
 
+    @Column(nullable = false, length = 50)
     private String expedient;
-
+    @ManyToMany(mappedBy = "driverList")
     private List<Route> routes;
+
+    public DriverUser() {
+    }
+    public DriverUser(String username, String password, String name, String email, String expedient) {
+        super(username, password, name, email);
+        this.expedient = expedient;
+    }
+
+    public DriverUser(String username, String password, String name, String email, Date birthdate,
+            String phoneNumber, String expedient) {
+        super(username, password, name, email, birthdate, phoneNumber);
+        this.expedient = expedient;
+    }
+
+
+    
 
     public String getExpedient() {
         return expedient;
@@ -21,7 +47,11 @@ public class DriverUser extends User {
         return routes;
     }
 
-    public void setRouts(List<Route> routs) {
-        this.routes = routs;
+    public void setRoutes(List<Route> routes) {
+        this.routes = routes;
+    }
+
+    public void setRouts(List<Route> routes) {
+        this.setRoutes(routes);
     }
 }
