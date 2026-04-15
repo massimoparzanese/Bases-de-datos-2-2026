@@ -1,6 +1,6 @@
 package unlp.info.bd2.services.Impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Supplier;
 import unlp.info.bd2.repositories.Impl.SupplierRepositoryImpl;
 import unlp.info.bd2.services.SupplierService;
@@ -21,7 +21,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Supplier createSupplier(String businessName, String authorizationNumber) throws ToursException {
         try {
             Supplier supplier = new Supplier(businessName, authorizationNumber);
@@ -32,7 +32,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Supplier> getSupplierById(Long id) throws ToursException {
         try {
             return supplierRepository.findById(id);
@@ -42,7 +42,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Supplier> getSupplierByAuthorizationNumber(String authorizationNumber) throws ToursException {
         try {
             return supplierRepository.findAll()
@@ -56,7 +56,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Supplier> getAllSuppliers() throws ToursException {
         try {
             return supplierRepository.findAll();
@@ -66,7 +66,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Supplier updateSupplier(Supplier supplier) throws ToursException {
         if (supplier == null || supplier.getId() == null) {
             throw new ToursException("El proveedor a actualizar debe tener id");
@@ -79,7 +79,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deleteSupplier(Long supplierId) throws ToursException {
         try {
             Optional<Supplier> supplier = supplierRepository.findById(supplierId);
@@ -94,6 +94,16 @@ public class SupplierServiceImpl implements SupplierService {
             throw ex;
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo eliminar el proveedor");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Supplier> getTopNSuppliersInPurchases(int n) throws ToursException {
+        try {            
+            return supplierRepository.getTopNSuppliersInPurchases(n);
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener los proveedores mas vendidos");    
         }
     }
 }

@@ -26,4 +26,6 @@ public interface ServiceService {
     Service updateServicePrice(Long serviceId, float newPrice) throws ToursException;
 
     void deleteService(Long serviceId) throws ToursException;
+
+    Service getMostDemandedService() throws ToursException;
 }

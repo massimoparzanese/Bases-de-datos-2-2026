@@ -24,4 +24,12 @@ public interface RouteService {
     void deleteRoute(Long routeId) throws ToursException;
 
     void deleteRouteIfNoSales(Long routeId) throws ToursException;
+
+    List<Route> getRoutesWithStop(Stop stop) throws ToursException;
+
+    int getMaxStopOfRoutes() throws ToursException;
+
+    List<Route> getRoutesNotSell() throws ToursException;
+
+    List<Route> getTop3RoutesWithMaxRating() throws ToursException;
 }

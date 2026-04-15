@@ -26,6 +26,8 @@ public interface PurchaseService {
 
     List<Purchase> getAllPurchases() throws ToursException;
 
+    List<Purchase> getAllPurchasesOfUsername(String username) throws ToursException;
+
     List<Purchase> getPurchasesByUser(Long userId) throws ToursException;
 
     Purchase updatePurchase(Purchase purchase) throws ToursException;
@@ -39,4 +41,6 @@ public interface PurchaseService {
     Review addReviewToPurchase(Long purchaseId, int rating, String comment) throws ToursException;
 
     Optional<Review> getReviewByPurchase(Long purchaseId) throws ToursException;
+    
+    int getCountOfPurchasesBetweenDates (Date start, Date end) throws ToursException;
 }

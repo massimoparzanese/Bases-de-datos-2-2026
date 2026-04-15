@@ -1,6 +1,6 @@
 package unlp.info.bd2.services.Impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Stop;
 import unlp.info.bd2.repositories.Impl.StopRepositoryImpl;
 import unlp.info.bd2.services.StopService;
@@ -18,7 +18,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Stop createStop(String name, String description) throws ToursException {
         try {
             return stopRepository.save(new Stop(name, description));
@@ -28,7 +28,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Stop> getStopById(Long id) throws ToursException {
         try {
             return stopRepository.findById(id);
@@ -38,7 +38,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Stop> getAllStops() throws ToursException {
         try {
             return stopRepository.findAll();
@@ -48,7 +48,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Stop> getStopsByNameStart(String prefix) throws ToursException {
         try {
             return stopRepository.findAll().stream()
@@ -60,7 +60,7 @@ public class StopServiceImpl implements StopService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deleteStop(Long stopId) throws ToursException {
         try {
             Stop stop = stopRepository.findById(stopId)

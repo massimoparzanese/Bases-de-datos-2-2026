@@ -1,6 +1,6 @@
 package unlp.info.bd2.services.Impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.*;
 import unlp.info.bd2.repositories.Impl.*;
 import unlp.info.bd2.services.PurchaseService;
@@ -42,13 +42,13 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Purchase createPurchase(String code, Long routeId, Long userId) throws ToursException {
         return this.createPurchase(code, new Date(), routeId, userId);
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Purchase createPurchase(String code, Date date, Long routeId, Long userId) throws ToursException {
         try {
 
@@ -84,7 +84,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Purchase> getPurchaseById(Long id) throws ToursException {
         try {
             return purchaseRepository.findById(id);
@@ -94,7 +94,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Purchase> getPurchaseByCode(String code) throws ToursException {
         try {
             return purchaseRepository.findAll()
@@ -107,7 +107,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Purchase> getAllPurchases() throws ToursException {
         try {
             return purchaseRepository.findAll();
@@ -117,7 +117,17 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
+    public List<Purchase> getAllPurchasesOfUsername(String username) throws ToursException {
+        try {
+            return purchaseRepository.findAllByUsername(username);
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener las compras del usuario");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Purchase> getPurchasesByUser(Long userId) throws ToursException {
         try {
             return purchaseRepository.findAll()
@@ -132,7 +142,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Purchase updatePurchase(Purchase purchase) throws ToursException {
         if (purchase == null || purchase.getId() == null) {
             throw new ToursException("La compra a actualizar debe tener id");
@@ -146,7 +156,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deletePurchase(Long purchaseId) throws ToursException {
         try {
             Purchase purchase = purchaseRepository.findById(purchaseId)
@@ -160,7 +170,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public ItemService addItemToPurchase(Long purchaseId, Long serviceId, int quantity) throws ToursException {
         if (quantity <= 0) {
             throw new ToursException("La cantidad debe ser mayor a cero");
@@ -192,7 +202,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void removeItemFromPurchase(Long purchaseId, Long itemServiceId) throws ToursException {
         try {
             Purchase purchase = purchaseRepository.findById(purchaseId)
@@ -219,7 +229,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Review addReviewToPurchase(Long purchaseId, int rating, String comment) throws ToursException {
         if (rating < 1 || rating > 5) {
             throw new ToursException("La calificacion debe estar entre 1 y 5");
@@ -246,13 +256,24 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Review> getReviewByPurchase(Long purchaseId) throws ToursException {
         try {
             Optional<Purchase> purchase = purchaseRepository.findById(purchaseId);
             return purchase.map(Purchase::getReview);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener la resena de la compra");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getCountOfPurchasesBetweenDates(Date start, Date end) throws ToursException{
+        
+        try{
+            return purchaseRepository.getCountOfPurchasesBetweenDates(start, end);
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener el conteo de compras entre fechas");
         }
     }
 }

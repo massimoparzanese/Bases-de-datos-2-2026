@@ -23,4 +23,6 @@ public interface SupplierService {
     Supplier updateSupplier(Supplier supplier) throws ToursException;
 
     void deleteSupplier(Long supplierId) throws ToursException;
+
+    List<Supplier> getTopNSuppliersInPurchases(int n) throws ToursException;
 }

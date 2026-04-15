@@ -1,6 +1,6 @@
 package unlp.info.bd2.services.Impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Purchase;
 import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.Stop;
@@ -27,7 +27,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Route createRoute(String name, float price, float totalKm, int maxNumberUsers, List<Stop> stops) throws ToursException {
         try {
             Route route = new Route(name, price, totalKm, maxNumberUsers);
@@ -41,7 +41,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Route> getRouteById(Long id) throws ToursException {
         try {
             return routeRepository.findById(id);
@@ -51,7 +51,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Route> getAllRoutes() throws ToursException {
         try {
             return routeRepository.findAll();
@@ -61,7 +61,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Route updateRoute(Route route) throws ToursException {
         if (route == null || route.getId() == null) {
             throw new ToursException("La ruta a actualizar debe tener id");
@@ -75,7 +75,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deleteRoute(Long routeId) throws ToursException {
         try {
             Route route = routeRepository.findById(routeId)
@@ -89,7 +89,7 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deleteRouteIfNoSales(Long routeId) throws ToursException {
         try {
             Route route = routeRepository.findById(routeId)
@@ -110,6 +110,45 @@ public class RouteServiceImpl implements RouteService {
             throw ex;
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo eliminar la ruta");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Route> getRoutesWithStop(Stop stop) throws ToursException {
+        try {
+            return routeRepository.getRoutesWithStop(stop);
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener las rutas con el stop indicado");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getMaxStopOfRoutes() throws ToursException {
+        try {
+            return routeRepository.getMaxStopOfRoutes();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener la maxima cantidad de paradas por ruta");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Route> getRoutesNotSell() throws ToursException {
+        try {
+            return routeRepository.getRoutesNotSell();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener las rutas sin ventas");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Route> getTop3RoutesWithMaxRating() throws ToursException {
+        try {
+            return routeRepository.getTop3RoutesWithMaxRating();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener el top 3 de rutas con mayor rating");
         }
     }
 }

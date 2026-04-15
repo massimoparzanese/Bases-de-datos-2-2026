@@ -30,4 +30,8 @@ public interface UserService {
     void deleteUser(Long userId) throws ToursException;
 
     List<User> getAllUsers() throws ToursException;
+
+    List<User> getUserSpendingMoreThan(float mount) throws ToursException;
+
+    List<TourGuideUser> getTourGuidesWithRating1() throws ToursException;
 }

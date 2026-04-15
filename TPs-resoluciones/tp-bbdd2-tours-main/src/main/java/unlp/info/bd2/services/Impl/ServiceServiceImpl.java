@@ -1,6 +1,6 @@
 package unlp.info.bd2.services.Impl;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Service;
 import unlp.info.bd2.model.Supplier;
 import unlp.info.bd2.repositories.Impl.ServiceRepositoryImpl;
@@ -27,7 +27,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Service createService(String name, float price, String description, Supplier supplier) throws ToursException {
         if (supplier == null) {
             throw new ToursException("El proveedor es obligatorio para crear un servicio");
@@ -56,7 +56,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public Optional<Service> getServiceById(Long id) throws ToursException {
         try {
             return serviceRepository.findById(id);
@@ -66,7 +66,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Service> getAllServices() throws ToursException {
         try {
             return serviceRepository.findAll();
@@ -76,7 +76,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(readOnly = true)
     public List<Service> getServicesBySupplier(Long supplierId) throws ToursException {
         try {
             return serviceRepository.findAll()
@@ -91,7 +91,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Service updateService(Service service) throws ToursException {
         if (service == null || service.getId() == null) {
             throw new ToursException("El servicio a actualizar debe tener id");
@@ -105,7 +105,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public Service updateServicePrice(Long serviceId, float newPrice) throws ToursException {
         if (newPrice < 0) {
             throw new ToursException("El nuevo precio no puede ser negativo");
@@ -124,7 +124,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    @Transactional(rollbackOn = ToursException.class)
+    @Transactional(rollbackFor = ToursException.class)
     public void deleteService(Long serviceId) throws ToursException {
         try {
             Service service = serviceRepository.findById(serviceId)
@@ -139,6 +139,16 @@ public class ServiceServiceImpl implements ServiceService {
             throw ex;
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo eliminar el servicio");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Service getMostDemandedService() throws ToursException {
+        try {
+            return serviceRepository.getMostDemandedService();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener el servicio mas demandado");
         }
     }
 }
