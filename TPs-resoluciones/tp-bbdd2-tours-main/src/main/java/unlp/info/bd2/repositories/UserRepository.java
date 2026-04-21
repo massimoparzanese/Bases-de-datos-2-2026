@@ -2,7 +2,15 @@ package unlp.info.bd2.repositories;
 
 import unlp.info.bd2.model.User;
 import java.util.List;
-public interface UserRepository extends BaseRepository<User, Long> {
+import java.util.Optional;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
 
     List<User> getUserSpendingMoreThan(float mount);
+
+    Optional<User> findByEmail(String email);
 }
