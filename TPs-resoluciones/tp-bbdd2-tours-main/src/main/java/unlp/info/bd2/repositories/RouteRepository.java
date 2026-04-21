@@ -18,11 +18,14 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
     
     List<Route> getTop3RoutesWithMaxRating();
 
-    @Query(value = "select r.* from routes r " +
-            "join purchases p on p.route_id = r.id " +
-            "group by r.id, r.name, r.price, r.total_km, r.max_number_users " +
-            "order by count(p.id) desc " +
-            "limit 3", nativeQuery = true)
+    @Query(value = """
+        select r.*
+        from routes r
+        join purchases p on p.route_id = r.id
+        group by r.id, r.name, r.price, r.total_km, r.max_number_users
+        order by count(p.id) desc
+        limit 3
+            """, nativeQuery = true)
     List<Route> getTop3RoutesWithMostPurchases();
 
     List<Route> findByPriceLessThanOrderByNameAsc(float price);
