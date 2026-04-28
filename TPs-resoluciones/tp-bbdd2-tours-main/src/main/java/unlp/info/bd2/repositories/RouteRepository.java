@@ -3,7 +3,6 @@ package unlp.info.bd2.repositories;
 import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.Stop;
 import java.util.List;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -11,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RouteRepository extends CrudRepository<Route, Long> {
+
+    boolean existsByTourGuideList_Id(Long tourGuideUserId);
 
     List<Route> getRoutesWithStop(Stop stop);
     

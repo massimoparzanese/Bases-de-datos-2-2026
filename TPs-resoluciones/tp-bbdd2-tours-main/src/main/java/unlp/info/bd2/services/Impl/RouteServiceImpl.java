@@ -1,11 +1,11 @@
 package unlp.info.bd2.services.Impl;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import unlp.info.bd2.model.Purchase;
 import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.Stop;
-import unlp.info.bd2.repositories.Impl.PurchaseRepositoryImpl;
-import unlp.info.bd2.repositories.Impl.RouteRepositoryImpl;
+import unlp.info.bd2.repositories.PurchaseRepository;
+import unlp.info.bd2.repositories.RouteRepository;
 import unlp.info.bd2.services.RouteService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -17,11 +17,11 @@ import java.util.Optional;
  */
 public class RouteServiceImpl implements RouteService {
 
-    private final RouteRepositoryImpl routeRepository;
-    private final PurchaseRepositoryImpl purchaseRepository;
+    private final RouteRepository routeRepository;
+    private final PurchaseRepository purchaseRepository;
 
-    public RouteServiceImpl(RouteRepositoryImpl routeRepository,
-            PurchaseRepositoryImpl purchaseRepository) {
+    public RouteServiceImpl(RouteRepository routeRepository,
+            PurchaseRepository purchaseRepository) {
         this.routeRepository = routeRepository;
         this.purchaseRepository = purchaseRepository;
     }
@@ -54,7 +54,7 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public List<Route> getAllRoutes() throws ToursException {
         try {
-            return routeRepository.findAll();
+            return (List<Route>) routeRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar las rutas");
         }
@@ -95,11 +95,7 @@ public class RouteServiceImpl implements RouteService {
             Route route = routeRepository.findById(routeId)
                     .orElseThrow(() -> new ToursException("No existe una ruta con id " + routeId));
 
-            boolean hasSales = purchaseRepository.findAll()
-                    .stream()
-                    .map(Purchase::getRoute)
-                    .filter(r -> r != null && r.getId() != null)
-                    .anyMatch(r -> r.getId().equals(routeId));
+                boolean hasSales = purchaseRepository.existsByRouteId(routeId);
 
             if (hasSales) {
                 throw new ToursException("No puede eliminarse una ruta con compras asociadas");
@@ -146,7 +142,7 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public List<Route> getTop3RoutesWithMaxRating() throws ToursException {
         try {
-            return routeRepository.getTop3RoutesWithMaxRating();
+            return routeRepository.getTop3RoutesWithMaxRating(PageRequest.of(0, 3));
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener el top 3 de rutas con mayor rating");
         }

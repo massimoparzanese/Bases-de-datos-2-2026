@@ -21,4 +21,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
     List<User> getUserSpendingMoreThan(float mount);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
 }

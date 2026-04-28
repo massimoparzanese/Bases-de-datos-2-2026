@@ -2,8 +2,9 @@ package unlp.info.bd2.repositories;
 
 import unlp.info.bd2.model.Supplier;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -22,5 +23,7 @@ public interface SupplierRepository extends CrudRepository<Supplier, Long> {
     order by count(p.id) desc
     """)
     List<Supplier> getTopNSuppliersInPurchases(Pageable pageable);
+
+    Optional<Supplier> findByAuthorizationNumber(String authorizationNumber);
 
 }

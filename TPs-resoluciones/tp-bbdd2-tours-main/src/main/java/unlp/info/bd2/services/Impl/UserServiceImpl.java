@@ -2,12 +2,11 @@ package unlp.info.bd2.services.Impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.DriverUser;
-import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.TourGuideUser;
 import unlp.info.bd2.model.User;
-import unlp.info.bd2.repositories.Impl.TourGuideUserRepositoryImpl;
-import unlp.info.bd2.repositories.Impl.RouteRepositoryImpl;
-import unlp.info.bd2.repositories.Impl.UsersRepositoryImpl;
+import unlp.info.bd2.repositories.TourGuideUserRepository;
+import unlp.info.bd2.repositories.RouteRepository;
+import unlp.info.bd2.repositories.UserRepository;
 import unlp.info.bd2.services.UserService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -21,19 +20,18 @@ import java.util.Optional;
  */
 public class UserServiceImpl implements UserService {
 
-    private final UsersRepositoryImpl userRepository;
-    private final TourGuideUserRepositoryImpl tourGuideUserRepository;
-    private final RouteRepositoryImpl routeRepository;
+    private final UserRepository userRepository;
+    private final TourGuideUserRepository tourGuideUserRepository;
+    private final RouteRepository routeRepository;
 
-    public UserServiceImpl(UsersRepositoryImpl userRepository,
-            TourGuideUserRepositoryImpl tourGuideUserRepository,
-            RouteRepositoryImpl routeRepository) {
+    public UserServiceImpl(UserRepository userRepository,
+            TourGuideUserRepository tourGuideUserRepository,
+            RouteRepository routeRepository) {
         this.userRepository = userRepository;
         this.tourGuideUserRepository = tourGuideUserRepository;
         this.routeRepository = routeRepository;
     }
 
-    @Override
     @Transactional(rollbackFor = ToursException.class)
     public User createUser(String username, String password, String name, String email, Date birthdate, String phoneNumber) throws ToursException {
         try {
@@ -86,10 +84,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Optional<User> getUserByUsername(String username) throws ToursException {
         try {
-            return userRepository.findAll()
-                    .stream()
-                    .filter(u -> u.getUsername() != null && u.getUsername().equals(username))
-                    .findFirst();
+            return userRepository.findByUsername(username);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo buscar el usuario por username");
         }
@@ -102,7 +97,9 @@ public class UserServiceImpl implements UserService {
             throw new ToursException("El usuario a actualizar debe tener id");
         }
         try {
-            String originalUsername = userRepository.getUsernameByIdWithoutFlushing(user.getId());
+            String originalUsername = userRepository.findById(user.getId())
+                    .map(User::getUsername)
+                    .orElseThrow(RuntimeException::new);
             user.setUsername(originalUsername);
             return userRepository.save(user);
         } catch (RuntimeException ex) {
@@ -122,12 +119,7 @@ public class UserServiceImpl implements UserService {
             }
 
             if (user instanceof TourGuideUser) {
-                boolean assignedToSomeRoute = routeRepository.findAll()
-                        .stream()
-                        .map(Route::getTourGuideList)
-                        .filter(list -> list != null)
-                        .flatMap(List::stream)
-                        .anyMatch(guide -> guide.getId() != null && guide.getId().equals(userId));
+                boolean assignedToSomeRoute = routeRepository.existsByTourGuideList_Id(userId);
                 if (assignedToSomeRoute) {
                     throw new ToursException("El usuario no puede ser desactivado");
                 }
@@ -151,7 +143,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<User> getAllUsers() throws ToursException {
         try {
-            return userRepository.findAll();
+            return (List<User>) userRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar los usuarios");
         }
