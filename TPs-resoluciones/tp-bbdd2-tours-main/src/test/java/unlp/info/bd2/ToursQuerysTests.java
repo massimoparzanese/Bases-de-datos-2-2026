@@ -1,6 +1,7 @@
 package unlp.info.bd2;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class ToursQuerysTests {
 
     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-    @BeforeAll
+    @BeforeEach
     public void prepareDB() throws Exception {
         this.initializer.prepareDB();
     }

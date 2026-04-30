@@ -13,14 +13,15 @@ public interface ServiceRepository extends CrudRepository<Service, Long> {
 
     List<Service> findBySupplierId(Long supplierId);
 
+    List<Service> findByNameAndSupplierId(String name, Long supplierId);
+
     
     @Query("""
         select s
         from Service s
-        join s.routes r
-        join r.purchases p
+        left join s.itemServiceList i
         group by s.id, s.name, s.description
-        order by count(p.id) desc
+        order by coalesce(sum(i.quantity), 0) desc
         """)
     List<Service> getMostDemandedService(Pageable pageable);
 }

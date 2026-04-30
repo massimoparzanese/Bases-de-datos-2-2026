@@ -14,7 +14,7 @@ public interface TourGuideUserRepository extends CrudRepository<TourGuideUser, L
     select t
     from TourGuideUser t
     join t.routes r
-    join r.purchases p
+    join Purchase p on p.route = r
     join p.review rev
     group by t.id, t.name, t.email, t.education
     having avg(rev.rating) = 1

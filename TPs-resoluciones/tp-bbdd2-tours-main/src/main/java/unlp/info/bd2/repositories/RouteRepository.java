@@ -1,19 +1,29 @@
 package unlp.info.bd2.repositories;
 
-import unlp.info.bd2.model.Route;
-import unlp.info.bd2.model.Stop;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import unlp.info.bd2.dto.RouteSummaryDTO;
+import unlp.info.bd2.model.Route;
+import unlp.info.bd2.model.Stop;
 
 @Repository
 public interface RouteRepository extends CrudRepository<Route, Long> {
 
     boolean existsByTourGuideList_Id(Long tourGuideUserId);
 
-    List<Route> getRoutesWithStop(Stop stop);
+    @Query("""
+        select distinct r
+        from Route r
+        join r.stops s
+        where s = :stop
+        """)
+    List<Route> getRoutesWithStop(@Param("stop") Stop stop);
     
 
     @Query("""
@@ -22,14 +32,22 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
         """)
     int getMaxStopOfRoutes();
     
+    @Query("""
+        from Route r
+        where not exists (
+            select 1
+            from Purchase p
+            where p.route = r
+        )
+        """)
     List<Route> getRoutesNotSell();
     
     @Query("""
-        select r
         from Route r
-        left join r.purchases p
+        left join Purchase p on p.route = r
+        left join p.review rev
         group by r.id, r.name, r.price, r.totalKm, r.maxNumberUsers
-        order by avg(p.rating) desc
+        order by avg(rev.rating) desc
         """)
     List<Route> getTop3RoutesWithMaxRating(Pageable pageable);
 
@@ -43,4 +61,25 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
     List<Route> getTop3RoutesWithMostPurchases(Pageable pageable);
 
     List<Route> findByPriceLessThanOrderByNameAsc(float price);
-}
+
+    @Query("""
+        SELECT r.name, COUNT(p), AVG(p.totalPrice)
+        FROM Purchase p JOIN p.route r
+        GROUP BY r.id, r.name
+    """)
+    List<Object[]> getRouteSummariesRaw();
+
+    /* Consulta para obtener resúmenes de rutas 
+    con DTO, sin necesidad de hacer nada en el service
+        @Query("""
+            SELECT new unlp.info.bd2.dto.RouteSummaryDTO(
+                r.name, 
+                COUNT(p), 
+                AVG(p.totalPrice)
+            )
+            FROM Purchase p JOIN p.route r
+            GROUP BY r.id, r.name
+        """)
+        List<RouteSummaryDTO> getRouteSummaries();
+    */
+    }

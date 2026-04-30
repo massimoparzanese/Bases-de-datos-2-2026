@@ -87,6 +87,18 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Service> getServiceByNameAndSupplierId(String name, Long supplierId) throws ToursException {
+        try {
+            return serviceRepository.findByNameAndSupplierId(name, supplierId)
+                    .stream()
+                    .findFirst();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener el servicio del proveedor");
+        }
+    }
+
+    @Override
     @Transactional(rollbackFor = ToursException.class)
     public Service updateService(Service service) throws ToursException {
         if (service == null || service.getId() == null) {

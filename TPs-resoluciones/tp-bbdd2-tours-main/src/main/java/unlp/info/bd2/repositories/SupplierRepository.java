@@ -13,14 +13,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SupplierRepository extends CrudRepository<Supplier, Long> {
     
-    // Preguntar por lo del N, si conviene usar pageable o un int como parámetro
-     @Query(""" 
+    @Query("""
     select s
     from Supplier s
-    join s.routes r
-    join r.purchases p
-    group by s.id, s.name, s.email
-    order by count(p.id) desc
+    join s.services serv
+    join serv.itemServiceList i
+    join i.purchase p
+    group by s.id, s.businessName, s.authorizationNumber
+    order by count(distinct p.id) desc
     """)
     List<Supplier> getTopNSuppliersInPurchases(Pageable pageable);
 

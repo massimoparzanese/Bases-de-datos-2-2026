@@ -14,9 +14,9 @@ public interface UserRepository extends CrudRepository<User, Long> {
     @Query("""
         select u
         from User u
-        join u.purchases p
+        join u.purchaseList p
         group by u.id, u.name, u.email
-        having sum(p.route.price) > :mount
+        having sum(p.totalPrice) > :mount
         """)
     List<User> getUserSpendingMoreThan(float mount);
 

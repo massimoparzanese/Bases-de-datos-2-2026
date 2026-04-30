@@ -151,6 +151,9 @@ public class PurchaseServiceImpl implements PurchaseService {
         try {
             Purchase purchase = purchaseRepository.findById(purchaseId)
                     .orElseThrow(() -> new ToursException("No existe una compra con id " + purchaseId));
+            if (purchase.getUser() != null && purchase.getUser().getPurchaseList() != null) {
+                purchase.getUser().getPurchaseList().remove(purchase);
+            }
             purchaseRepository.delete(purchase);
         } catch (ToursException ex) {
             throw ex;

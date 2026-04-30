@@ -1,5 +1,6 @@
 package unlp.info.bd2.services;
 
+import unlp.info.bd2.dto.RouteSummaryDTO;
 import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.Stop;
 import unlp.info.bd2.utils.ToursException;
@@ -25,6 +26,12 @@ public interface RouteService {
 
     void deleteRouteIfNoSales(Long routeId) throws ToursException;
 
+    void assignDriverByUsername(String username, Long routeId) throws ToursException;
+
+    void assignTourGuideByUsername(String username, Long routeId) throws ToursException;
+
+    List<Route> getRoutesBelowPrice(float price) throws ToursException;
+
     List<Route> getRoutesWithStop(Stop stop) throws ToursException;
 
     int getMaxStopOfRoutes() throws ToursException;
@@ -32,4 +39,6 @@ public interface RouteService {
     List<Route> getRoutesNotSell() throws ToursException;
 
     List<Route> getTop3RoutesWithMaxRating() throws ToursException;
+    
+    List<RouteSummaryDTO> getRouteSummaries() throws ToursException;
 }
