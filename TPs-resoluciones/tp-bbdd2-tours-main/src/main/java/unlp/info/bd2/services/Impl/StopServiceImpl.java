@@ -2,7 +2,7 @@ package unlp.info.bd2.services.Impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Stop;
-import unlp.info.bd2.repositories.Impl.StopRepositoryImpl;
+import unlp.info.bd2.repositories.StopRepository;
 import unlp.info.bd2.services.StopService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public class StopServiceImpl implements StopService {
 
-    private final StopRepositoryImpl stopRepository;
+    private final StopRepository stopRepository;
 
-    public StopServiceImpl(StopRepositoryImpl stopRepository) {
+    public StopServiceImpl(StopRepository stopRepository) {
         this.stopRepository = stopRepository;
     }
 
@@ -41,7 +41,7 @@ public class StopServiceImpl implements StopService {
     @Transactional(readOnly = true)
     public List<Stop> getAllStops() throws ToursException {
         try {
-            return stopRepository.findAll();
+            return (List<Stop>)stopRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar las paradas");
         }
@@ -51,9 +51,7 @@ public class StopServiceImpl implements StopService {
     @Transactional(readOnly = true)
     public List<Stop> getStopsByNameStart(String prefix) throws ToursException {
         try {
-            return stopRepository.findAll().stream()
-                    .filter(s -> s.getName() != null && s.getName().startsWith(prefix))
-                    .toList();
+            return stopRepository.findByNameStartingWith(prefix);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo buscar paradas por prefijo");
         }

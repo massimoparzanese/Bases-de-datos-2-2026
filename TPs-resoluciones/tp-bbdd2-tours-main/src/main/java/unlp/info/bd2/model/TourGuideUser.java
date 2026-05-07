@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToMany;
 @DiscriminatorValue("TOURGUIDE")
 public class TourGuideUser extends User {
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String education;
     
     @ManyToMany(mappedBy = "tourGuideList")

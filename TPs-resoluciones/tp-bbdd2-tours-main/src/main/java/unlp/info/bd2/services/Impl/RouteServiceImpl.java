@@ -1,14 +1,21 @@
 package unlp.info.bd2.services.Impl;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import unlp.info.bd2.model.Purchase;
+
+import unlp.info.bd2.dto.RouteSummaryDTO;
+import unlp.info.bd2.model.DriverUser;
 import unlp.info.bd2.model.Route;
 import unlp.info.bd2.model.Stop;
-import unlp.info.bd2.repositories.Impl.PurchaseRepositoryImpl;
-import unlp.info.bd2.repositories.Impl.RouteRepositoryImpl;
+import unlp.info.bd2.model.TourGuideUser;
+import unlp.info.bd2.model.User;
+import unlp.info.bd2.repositories.PurchaseRepository;
+import unlp.info.bd2.repositories.RouteRepository;
+import unlp.info.bd2.repositories.UserRepository;
 import unlp.info.bd2.services.RouteService;
 import unlp.info.bd2.utils.ToursException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +24,16 @@ import java.util.Optional;
  */
 public class RouteServiceImpl implements RouteService {
 
-    private final RouteRepositoryImpl routeRepository;
-    private final PurchaseRepositoryImpl purchaseRepository;
+    private final RouteRepository routeRepository;
+    private final PurchaseRepository purchaseRepository;
+    private final UserRepository userRepository;
 
-    public RouteServiceImpl(RouteRepositoryImpl routeRepository,
-            PurchaseRepositoryImpl purchaseRepository) {
+    public RouteServiceImpl(RouteRepository routeRepository,
+            PurchaseRepository purchaseRepository,
+            UserRepository userRepository) {
         this.routeRepository = routeRepository;
         this.purchaseRepository = purchaseRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -54,7 +64,7 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public List<Route> getAllRoutes() throws ToursException {
         try {
-            return routeRepository.findAll();
+            return (List<Route>) routeRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar las rutas");
         }
@@ -95,11 +105,7 @@ public class RouteServiceImpl implements RouteService {
             Route route = routeRepository.findById(routeId)
                     .orElseThrow(() -> new ToursException("No existe una ruta con id " + routeId));
 
-            boolean hasSales = purchaseRepository.findAll()
-                    .stream()
-                    .map(Purchase::getRoute)
-                    .filter(r -> r != null && r.getId() != null)
-                    .anyMatch(r -> r.getId().equals(routeId));
+                boolean hasSales = purchaseRepository.existsByRouteId(routeId);
 
             if (hasSales) {
                 throw new ToursException("No puede eliminarse una ruta con compras asociadas");
@@ -110,6 +116,16 @@ public class RouteServiceImpl implements RouteService {
             throw ex;
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo eliminar la ruta");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Route> getRoutesBelowPrice(float price) throws ToursException {
+        try {
+            return routeRepository.findByPriceLessThanOrderByNameAsc(price);
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener las rutas por precio");
         }
     }
 
@@ -146,9 +162,91 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public List<Route> getTop3RoutesWithMaxRating() throws ToursException {
         try {
-            return routeRepository.getTop3RoutesWithMaxRating();
+            return routeRepository.getTop3RoutesWithMaxRating(PageRequest.of(0, 3));
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener el top 3 de rutas con mayor rating");
         }
     }
+
+    @Transactional(rollbackFor = ToursException.class)
+    public void assignDriverByUsername(String username, Long routeId) throws ToursException {
+        try {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ToursException("No pudo realizarse la asignación"));
+            if (!(user instanceof DriverUser driverUser)) {
+                throw new ToursException("No pudo realizarse la asignación");
+            }
+
+            Route route = routeRepository.findById(routeId)
+                    .orElseThrow(() -> new ToursException("No pudo realizarse la asignación"));
+
+            if (driverUser.getRoutes() == null) {
+                driverUser.setRoutes(new ArrayList<>());
+            }
+            if (route.getDriverList() == null) {
+                route.setDriverList(new ArrayList<>());
+            }
+
+            if (!driverUser.getRoutes().contains(route)) {
+                driverUser.getRoutes().add(route);
+            }
+            if (!route.getDriverList().contains(driverUser)) {
+                route.getDriverList().add(driverUser);
+            }
+
+            userRepository.save(driverUser);
+            routeRepository.save(route);
+        } catch (ToursException ex) {
+            throw ex;
+        } catch (RuntimeException ex) {
+            throw new ToursException("No pudo realizarse la asignación");
+        }
+    }
+
+    @Transactional(rollbackFor = ToursException.class)
+    public void assignTourGuideByUsername(String username, Long routeId) throws ToursException {
+        try {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ToursException("No pudo realizarse la asignación"));
+            if (!(user instanceof TourGuideUser tourGuideUser)) {
+                throw new ToursException("No pudo realizarse la asignación");
+            }
+
+            Route route = routeRepository.findById(routeId)
+                    .orElseThrow(() -> new ToursException("No pudo realizarse la asignación"));
+
+            if (tourGuideUser.getRoutes() == null) {
+                tourGuideUser.setRoutes(new ArrayList<>());
+            }
+            if (route.getTourGuideList() == null) {
+                route.setTourGuideList(new ArrayList<>());
+            }
+
+            if (!tourGuideUser.getRoutes().contains(route)) {
+                tourGuideUser.getRoutes().add(route);
+            }
+            if (!route.getTourGuideList().contains(tourGuideUser)) {
+                route.getTourGuideList().add(tourGuideUser);
+            }
+
+            userRepository.save(tourGuideUser);
+            routeRepository.save(route);
+        } catch (ToursException ex) {
+            throw ex;
+        } catch (RuntimeException ex) {
+            throw new ToursException("No pudo realizarse la asignación");
+        }
+
+    
+    }
+    public List<RouteSummaryDTO> getRouteSummaries() {
+         return routeRepository.getRouteSummariesRaw().stream()
+                .map(row -> new RouteSummaryDTO(
+                        (String) row[0],     // name
+                        (Long) row[1],       // count
+                        (Double) row[2]      // avg
+                ))
+                .toList(); 
+    }
+    
 }

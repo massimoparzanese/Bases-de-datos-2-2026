@@ -2,7 +2,9 @@ package unlp.info.bd2.services.Impl;
 
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.*;
-import unlp.info.bd2.repositories.Impl.*;
+import unlp.info.bd2.repositories.PurchaseRepository;
+import unlp.info.bd2.repositories.RouteRepository;
+import unlp.info.bd2.repositories.*;
 import unlp.info.bd2.services.PurchaseService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -15,24 +17,24 @@ import java.util.Optional;
  */
 public class PurchaseServiceImpl implements PurchaseService {
 
-    private final PurchaseRepositoryImpl purchaseRepository;
+    private final PurchaseRepository purchaseRepository;
 
-    private final RouteRepositoryImpl routeRepository;
+    private final RouteRepository routeRepository;
 
-    private final UsersRepositoryImpl userRepository;
+    private final UserRepository userRepository;
 
-    private final ServiceRepositoryImpl serviceRepository;
+    private final ServiceRepository serviceRepository;
 
-    private final ItemServiceRepositoryImpl itemServiceRepository;
+    private final ItemServiceRepository itemServiceRepository;
 
-    private final ReviewRepositoryImpl reviewRepository;
+    private final ReviewRepository reviewRepository;
 
-    public PurchaseServiceImpl(PurchaseRepositoryImpl purchaseRepository,
-                               RouteRepositoryImpl routeRepository,
-                               UsersRepositoryImpl userRepository,
-                               ServiceRepositoryImpl serviceRepository,
-                               ItemServiceRepositoryImpl itemServiceRepository,
-                               ReviewRepositoryImpl reviewRepository) {
+    public PurchaseServiceImpl(PurchaseRepository purchaseRepository,
+                               RouteRepository routeRepository,
+                               UserRepository userRepository,
+                               ServiceRepository serviceRepository,
+                               ItemServiceRepository itemServiceRepository,
+                               ReviewRepository reviewRepository) {
         this.purchaseRepository = purchaseRepository;
         this.routeRepository = routeRepository;
         this.userRepository = userRepository;
@@ -57,11 +59,7 @@ public class PurchaseServiceImpl implements PurchaseService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ToursException("No existe el usuario"));
 
-            long purchasesForRoute = purchaseRepository.findAll()
-                    .stream()
-                    .map(Purchase::getRoute)
-                    .filter(r -> r != null && r.getId() != null && r.getId().equals(routeId))
-                    .count();
+                long purchasesForRoute = purchaseRepository.countByRouteId(routeId);
 
             if (purchasesForRoute >= route.getMaxNumberUsers()) {
                 throw new ToursException("No puede realizarse la compra");
@@ -97,10 +95,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Transactional(readOnly = true)
     public Optional<Purchase> getPurchaseByCode(String code) throws ToursException {
         try {
-            return purchaseRepository.findAll()
-                    .stream()
-                    .filter(p -> p.getCode() != null && p.getCode().equals(code))
-                    .findFirst();
+            return purchaseRepository.findByCode(code);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo buscar la compra por codigo");
         }
@@ -120,7 +115,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Transactional(readOnly = true)
     public List<Purchase> getAllPurchasesOfUsername(String username) throws ToursException {
         try {
-            return purchaseRepository.findAllByUsername(username);
+            return purchaseRepository.getAllPurchasesOfUsername(username);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener las compras del usuario");
         }
@@ -130,12 +125,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Transactional(readOnly = true)
     public List<Purchase> getPurchasesByUser(Long userId) throws ToursException {
         try {
-            return purchaseRepository.findAll()
-                    .stream()
-                    .filter(p -> p.getUser() != null
-                            && p.getUser().getId() != null
-                            && p.getUser().getId().equals(userId))
-                    .toList();
+            return purchaseRepository.findByUserId(userId);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener las compras del usuario");
         }
@@ -161,6 +151,9 @@ public class PurchaseServiceImpl implements PurchaseService {
         try {
             Purchase purchase = purchaseRepository.findById(purchaseId)
                     .orElseThrow(() -> new ToursException("No existe una compra con id " + purchaseId));
+            if (purchase.getUser() != null && purchase.getUser().getPurchaseList() != null) {
+                purchase.getUser().getPurchaseList().remove(purchase);
+            }
             purchaseRepository.delete(purchase);
         } catch (ToursException ex) {
             throw ex;

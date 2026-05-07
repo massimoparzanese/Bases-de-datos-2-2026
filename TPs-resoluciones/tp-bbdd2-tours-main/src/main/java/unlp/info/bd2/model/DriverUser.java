@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToMany;
 @DiscriminatorValue("DRIVER")
 public class DriverUser extends User {
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = true, length = 50)
     private String expedient;
     @ManyToMany(mappedBy = "driverList")
     private List<Route> routes;

@@ -21,6 +21,8 @@ public interface ServiceService {
 
     List<Service> getServicesBySupplier(Long supplierId) throws ToursException;
 
+    Optional<Service> getServiceByNameAndSupplierId(String name, Long supplierId) throws ToursException;
+
     Service updateService(Service service) throws ToursException;
 
     Service updateServicePrice(Long serviceId, float newPrice) throws ToursException;

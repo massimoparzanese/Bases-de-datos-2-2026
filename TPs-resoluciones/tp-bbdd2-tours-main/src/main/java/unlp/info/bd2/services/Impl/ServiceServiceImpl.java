@@ -1,10 +1,11 @@
 package unlp.info.bd2.services.Impl;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Service;
 import unlp.info.bd2.model.Supplier;
-import unlp.info.bd2.repositories.Impl.ServiceRepositoryImpl;
-import unlp.info.bd2.repositories.Impl.SupplierRepositoryImpl;
+import unlp.info.bd2.repositories.ServiceRepository;
+import unlp.info.bd2.repositories.SupplierRepository;
 import unlp.info.bd2.services.ServiceService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -17,11 +18,11 @@ import java.util.Optional;
 public class ServiceServiceImpl implements ServiceService {
 
 
-    private final ServiceRepositoryImpl serviceRepository;
+    private final ServiceRepository serviceRepository;
 
-    private final SupplierRepositoryImpl supplierRepository;
+    private final SupplierRepository supplierRepository;
 
-    public ServiceServiceImpl(ServiceRepositoryImpl serviceRepository, SupplierRepositoryImpl supplierRepository) {
+    public ServiceServiceImpl(ServiceRepository serviceRepository, SupplierRepository supplierRepository) {
         this.serviceRepository = serviceRepository;
         this.supplierRepository = supplierRepository;
     }
@@ -51,7 +52,8 @@ public class ServiceServiceImpl implements ServiceService {
         } catch (ToursException ex) {
             throw ex;
         } catch (RuntimeException ex) {
-            throw new ToursException("No se pudo crear el servicio");
+            ex.printStackTrace();
+            throw new ToursException("No se pudo crear el servicio: " + ex.getMessage());
         }
     }
 
@@ -69,7 +71,7 @@ public class ServiceServiceImpl implements ServiceService {
     @Transactional(readOnly = true)
     public List<Service> getAllServices() throws ToursException {
         try {
-            return serviceRepository.findAll();
+            return (List<Service>) serviceRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar los servicios");
         }
@@ -79,14 +81,21 @@ public class ServiceServiceImpl implements ServiceService {
     @Transactional(readOnly = true)
     public List<Service> getServicesBySupplier(Long supplierId) throws ToursException {
         try {
-            return serviceRepository.findAll()
-                    .stream()
-                    .filter(s -> s.getSupplier() != null
-                            && s.getSupplier().getId() != null
-                            && s.getSupplier().getId().equals(supplierId))
-                    .toList();
+            return serviceRepository.findBySupplierId(supplierId);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener los servicios del proveedor");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Service> getServiceByNameAndSupplierId(String name, Long supplierId) throws ToursException {
+        try {
+            return serviceRepository.findByNameAndSupplierId(name, supplierId)
+                    .stream()
+                    .findFirst();
+        } catch (RuntimeException ex) {
+            throw new ToursException("No se pudo obtener el servicio del proveedor");
         }
     }
 
@@ -146,7 +155,13 @@ public class ServiceServiceImpl implements ServiceService {
     @Transactional(readOnly = true)
     public Service getMostDemandedService() throws ToursException {
         try {
-            return serviceRepository.getMostDemandedService();
+            List<Service> result = serviceRepository.getMostDemandedService(PageRequest.of(0, 1));
+            if (result.isEmpty()) {
+                throw new ToursException("No hay servicios registrados");
+            }
+            return result.get(0);
+        } catch (ToursException ex) {
+            throw ex;
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener el servicio mas demandado");
         }

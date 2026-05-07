@@ -1,8 +1,10 @@
 package unlp.info.bd2.services.Impl;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.Supplier;
-import unlp.info.bd2.repositories.Impl.SupplierRepositoryImpl;
+import unlp.info.bd2.repositories.SupplierRepository;
 import unlp.info.bd2.services.SupplierService;
 import unlp.info.bd2.utils.ToursException;
 
@@ -14,9 +16,9 @@ import java.util.Optional;
  */
 public class SupplierServiceImpl implements SupplierService {
 
-    private final SupplierRepositoryImpl supplierRepository;
+    private final SupplierRepository supplierRepository;
 
-    public SupplierServiceImpl(SupplierRepositoryImpl supplierRepository) {
+    public SupplierServiceImpl(SupplierRepository supplierRepository) {
         this.supplierRepository = supplierRepository;
     }
 
@@ -45,11 +47,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Transactional(readOnly = true)
     public Optional<Supplier> getSupplierByAuthorizationNumber(String authorizationNumber) throws ToursException {
         try {
-            return supplierRepository.findAll()
-                    .stream()
-                    .filter(s -> s.getAuthorizationNumber() != null
-                            && s.getAuthorizationNumber().equals(authorizationNumber))
-                    .findFirst();
+            return supplierRepository.findByAuthorizationNumber(authorizationNumber);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo buscar el proveedor por numero de autorizacion");
         }
@@ -59,7 +57,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Transactional(readOnly = true)
     public List<Supplier> getAllSuppliers() throws ToursException {
         try {
-            return supplierRepository.findAll();
+            return (List<Supplier>) supplierRepository.findAll();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo listar los proveedores");
         }
@@ -100,8 +98,9 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     @Transactional(readOnly = true)
     public List<Supplier> getTopNSuppliersInPurchases(int n) throws ToursException {
-        try {            
-            return supplierRepository.getTopNSuppliersInPurchases(n);
+        try {
+            Pageable pageable = PageRequest.of(0, n);
+            return supplierRepository.getTopNSuppliersInPurchases(pageable);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener los proveedores mas vendidos");    
         }
