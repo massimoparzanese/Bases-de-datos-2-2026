@@ -22,14 +22,18 @@ public interface PurchaseRepository extends CrudRepository<Purchase, Long> {
 
 	List<Purchase> findByUserId(Long userId);
 
-	@Query("""
-		select count(p)
-		from Purchase p
-		where p.date between :start and :end
-		""")
-	int getCountOfPurchasesBetweenDates(@Param("start") Date start, @Param("end") Date end);
+    @Query("""
+        select count(p)
+        from Purchase p
+        where p.date between :from and :to
+        """)
+    int getCountOfPurchasesBetweenDates(@Param("from") Date from, @Param("to") Date to);
 
-	List<Purchase> findByUserUsername(String username);
+    @Query("""
+        from Purchase p
+        where p.user.username = :username
+        """)
+    List<Purchase> getAllPurchasesOfUsername(@Param("username") String username);
 
 	boolean existsByRouteId(Long routeId);
 }

@@ -14,14 +14,14 @@ import org.springframework.stereotype.Repository;
 public interface SupplierRepository extends CrudRepository<Supplier, Long> {
     
     @Query("""
-    select s
-    from Supplier s
-    join s.services serv
-    join serv.itemServiceList i
-    join i.purchase p
-    group by s.id, s.businessName, s.authorizationNumber
-    order by count(distinct p.id) desc
-    """)
+        select s
+        from Supplier s
+        join s.services serv
+        join serv.itemServiceList i
+        join i.purchase p
+        group by s.id
+        order by count(distinct p.id) desc
+        """)
     List<Supplier> getTopNSuppliersInPurchases(Pageable pageable);
 
     Optional<Supplier> findByAuthorizationNumber(String authorizationNumber);

@@ -24,29 +24,28 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
         where s = :stop
         """)
     List<Route> getRoutesWithStop(@Param("stop") Stop stop);
-    
 
     @Query("""
         select max(size(r.stops))
         from Route r
         """)
     int getMaxStopOfRoutes();
-    
+
     @Query("""
         from Route r
         where not exists (
-            select 1
             from Purchase p
             where p.route = r
         )
         """)
     List<Route> getRoutesNotSell();
-    
+
     @Query("""
+        select r
         from Route r
         left join Purchase p on p.route = r
         left join p.review rev
-        group by r.id, r.name, r.price, r.totalKm, r.maxNumberUsers
+        group by r.id
         order by avg(rev.rating) desc
         """)
     List<Route> getTop3RoutesWithMaxRating(Pageable pageable);
@@ -55,7 +54,7 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
         select r
         from Purchase p
         join p.route r
-        group by r.id, r.name, r.price, r.totalKm, r.maxNumberUsers
+        group by r.id
         order by count(p.id) desc
         """)
     List<Route> getTop3RoutesWithMostPurchases(Pageable pageable);
@@ -69,17 +68,5 @@ public interface RouteRepository extends CrudRepository<Route, Long> {
     """)
     List<Object[]> getRouteSummariesRaw();
 
-    /* Consulta para obtener resúmenes de rutas 
-    con DTO, sin necesidad de hacer nada en el service
-        @Query("""
-            SELECT new unlp.info.bd2.dto.RouteSummaryDTO(
-                r.name, 
-                COUNT(p), 
-                AVG(p.totalPrice)
-            )
-            FROM Purchase p JOIN p.route r
-            GROUP BY r.id, r.name
-        """)
-        List<RouteSummaryDTO> getRouteSummaries();
-    */
+
     }

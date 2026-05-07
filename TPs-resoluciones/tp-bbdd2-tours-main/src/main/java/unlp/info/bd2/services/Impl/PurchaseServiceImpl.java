@@ -115,7 +115,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Transactional(readOnly = true)
     public List<Purchase> getAllPurchasesOfUsername(String username) throws ToursException {
         try {
-            return purchaseRepository.findByUserUsername(username);
+            return purchaseRepository.getAllPurchasesOfUsername(username);
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener las compras del usuario");
         }

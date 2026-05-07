@@ -20,7 +20,7 @@ public interface ServiceRepository extends CrudRepository<Service, Long> {
         select s
         from Service s
         left join s.itemServiceList i
-        group by s.id, s.name, s.description
+        group by s.id
         order by coalesce(sum(i.quantity), 0) desc
         """)
     List<Service> getMostDemandedService(Pageable pageable);
