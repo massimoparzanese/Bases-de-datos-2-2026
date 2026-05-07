@@ -15,28 +15,20 @@ import unlp.info.bd2.model.TourGuideUser;
 public interface UserRepository extends CrudRepository<User, Long> {
 
     @Query("""
-        select distinct tg
-        from TourGuideUser tg
-        join tg.routes r
-        join Purchase p on p.route = r
-        join p.review rev
-        where rev.rating = 1
-        """)
+        SELECT DISTINCT g
+        FROM Purchase p
+        JOIN p.route r
+        JOIN r.tourGuideList g
+        JOIN p.review rev
+        WHERE rev.rating = 1 and TYPE(g) = TourGuideUser
+    """)
     List<TourGuideUser> getTourGuidesWithRating1();
 
     @Query("""
-        select distinct u
-        from User u
-        where TYPE(u) = User
-        and (
-            select coalesce(sum(p.totalPrice), 0.0)
-            from Purchase p
-            where p.user = u
-            and p.review is not null
-        ) > :amount
-        """)
+        SELECT DISTINCT p.user FROM Purchase p
+        WHERE p.totalPrice >= :amount
+    """)
     List<User> getUserSpendingMoreThan(@Param("amount") float amount);
-
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);

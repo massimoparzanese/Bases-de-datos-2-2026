@@ -24,7 +24,6 @@ import unlp.info.bd2.repositories.ServiceRepository;
 import unlp.info.bd2.repositories.ReviewRepository;
 import unlp.info.bd2.repositories.StopRepository;
 import unlp.info.bd2.repositories.SupplierRepository;
-import unlp.info.bd2.repositories.TourGuideUserRepository;
 import unlp.info.bd2.repositories.UserRepository;
 import unlp.info.bd2.services.ToursService;
 import unlp.info.bd2.services.PurchaseService;
@@ -39,9 +38,6 @@ public class ToursServiceImpl implements ToursService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private TourGuideUserRepository tourGuideUserRepository;
 
     @Autowired
     private RouteRepository routeRepository;
@@ -73,7 +69,7 @@ public class ToursServiceImpl implements ToursService {
 
     @PostConstruct
     void initServices() {
-        this.userService = new UserServiceImpl(userRepository, tourGuideUserRepository, routeRepository);
+        this.userService = new UserServiceImpl(userRepository, routeRepository);
         this.routeService = new RouteServiceImpl(routeRepository, purchaseRepository, userRepository);
         this.supplierService = new SupplierServiceImpl(supplierRepository);
         this.serviceService = new ServiceServiceImpl(serviceRepository, supplierRepository);

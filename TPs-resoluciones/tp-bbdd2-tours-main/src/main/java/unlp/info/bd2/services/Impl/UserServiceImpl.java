@@ -4,7 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 import unlp.info.bd2.model.DriverUser;
 import unlp.info.bd2.model.TourGuideUser;
 import unlp.info.bd2.model.User;
-import unlp.info.bd2.repositories.TourGuideUserRepository;
 import unlp.info.bd2.repositories.RouteRepository;
 import unlp.info.bd2.repositories.UserRepository;
 import unlp.info.bd2.services.UserService;
@@ -21,14 +20,11 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final TourGuideUserRepository tourGuideUserRepository;
     private final RouteRepository routeRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-            TourGuideUserRepository tourGuideUserRepository,
             RouteRepository routeRepository) {
         this.userRepository = userRepository;
-        this.tourGuideUserRepository = tourGuideUserRepository;
         this.routeRepository = routeRepository;
     }
 
@@ -162,7 +158,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public List<TourGuideUser> getTourGuidesWithRating1() throws ToursException {
         try {
-            return tourGuideUserRepository.getTourGuidesWithRating1();
+            return userRepository.getTourGuidesWithRating1();
         } catch (RuntimeException ex) {
             throw new ToursException("No se pudo obtener guias con rating 1");
         }
