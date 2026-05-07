@@ -20,8 +20,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
         join tg.routes r
         join Purchase p on p.route = r
         join p.review rev
-        group by tg.id, tg.username, tg.password, tg.name, tg.email, tg.birthdate, tg.phoneNumber, tg.active, tg.education
-        having avg(rev.rating) = 1
+        where rev.rating = 1
         """)
     List<TourGuideUser> getTourGuidesWithRating1();
 

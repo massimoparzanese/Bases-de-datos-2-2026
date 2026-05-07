@@ -52,7 +52,8 @@ public class ServiceServiceImpl implements ServiceService {
         } catch (ToursException ex) {
             throw ex;
         } catch (RuntimeException ex) {
-            throw new ToursException("No se pudo crear el servicio");
+            ex.printStackTrace();
+            throw new ToursException("No se pudo crear el servicio: " + ex.getMessage());
         }
     }
 
